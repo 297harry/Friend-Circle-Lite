@@ -10,7 +10,7 @@ debug: false
 #   article_count: 每个站点最多抓取的文章数量
 spider_settings:
   enable: true
-  json_url: "https://blog.liushen.fun/friend.json"
+  json_url: "https://data-bee.netlify.app/friend.json"
   article_count: 5
 
 # 代理配置
@@ -33,7 +33,7 @@ proxy_settings:
 #   merge_link_check_data: 是否合并友链可达性数据
 merge_settings:
   enable: false
-  remote_base_url: "https://fc.liushen.fun"
+  remote_base_url: "https://data-bee-fc-lite.netlify.app/"
   merge_article_data: true
   merge_link_check_data: true
 
@@ -51,7 +51,7 @@ link_check:
   max_workers: 10
   status_api_url: "https://v2.xxapi.cn/api/status?url={url}"
   enable_backlink_check: true
-  author_url: "blog.liushen.fun"
+  author_url: "data-bee.netlify.app"
 
 # 邮件推送功能配置，暂未实现，等待后续开发
 # 说明：每次运行后向指定邮箱推送所有友链文章更新。
@@ -64,18 +64,18 @@ email_push:
 # 邮件 issue 订阅功能配置
 # 说明：从 GitHub issue 中提取订阅邮箱，并推送你自己站点的新文章。
 rss_subscribe:
-  enable: true
-  github_username: willow-god
-  github_repo: Friend-Circle-Lite
-  your_blog_url: https://blog.liushen.fun/
+  enable: false
+  github_username: 297harry
+  github_repo: personal-blog
+  your_blog_url: https://data-bee.netlify.app/
   email_template: "./push_templates/default.html"
   website_info:
-    title: "清羽飞扬"
+    title: "Data Bee"
 
 # SMTP 配置
 # 说明：用于上方邮件相关功能。如果不使用邮件功能，可关闭 email_push 和 rss_subscribe。
 smtp:
-  email: notify@liushen.fun
+  email: notify@example.com
   server: smtp.exmail.qq.com
   port: 465
   use_tls: true
@@ -83,7 +83,5 @@ smtp:
 # 特殊 RSS 地址指定
 # 说明：用于指定特殊 RSS 地址，比如 B 站专栏等不常见 RSS 地址后缀。可以置空，但不要删除此项。
 specific_RSS:
-  - name: "阮一峰"
-    url: "http://feeds.feedburner.com/ruanyifeng"
-  # - name: "无名小栈"
-  #   url: "https://blog.imsyy.top/rss.xml"
+  - name: ""
+    url: ""
