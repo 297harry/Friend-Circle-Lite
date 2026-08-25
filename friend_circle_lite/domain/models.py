@@ -223,6 +223,7 @@ class Article:
     summary: str = ""
     content: str = ""
     avatar: str = ""
+    lang: str = ""
 
     def to_public_dict(self) -> dict[str, str]:
         """Return the legacy public article schema used by `all.json`."""
@@ -232,6 +233,7 @@ class Article:
             "link": self.link,
             "author": self.author,
             "avatar": self.avatar,
+            "lang": self.lang,
         }
 
     def to_tracking_dict(self) -> dict[str, str]:
