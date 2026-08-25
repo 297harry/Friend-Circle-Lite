@@ -65,6 +65,7 @@ class Website:
     url: str
     avatar: str = ""
     linkpage: str = ""
+    lang: str = ""
 
     def __post_init__(self) -> None:
         self.url = normalize_homepage_url(self.url)
@@ -83,7 +84,7 @@ class Website:
 
         name = raw_friend[0]
         url = raw_friend[1]
-        if len(raw_friend) > 3:
+        if len(raw_friend) > 5:
             linkpage = raw_friend[2]
             avatar = raw_friend[3]
             lang = raw_friend[5]
