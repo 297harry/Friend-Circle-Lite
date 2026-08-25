@@ -1,18 +1,18 @@
 function initialize_fc_lite() {
 
-    // 用户配置
-    // 设置默认配置
+    // User config
+    // Apply defaults
     UserConfig = {
         private_api_url: UserConfig?.private_api_url || "", 
-        page_turning_number: UserConfig?.page_turning_number || 24, // 默认24篇
-        error_img: UserConfig?.error_img || "https://fastly.jsdelivr.net/gh/willow-god/Friend-Circle-Lite/static/favicon.ico" // 默认头像
+        page_turning_number: UserConfig?.page_turning_number || 24, // 24 articles per page by default
+        error_img: UserConfig?.error_img || "https://fastly.jsdelivr.net/gh/willow-god/Friend-Circle-Lite/static/favicon.ico" // default avatar
     };
 
     const root = document.getElementById('friend-circle-lite-root');
     
-    if (!root) return; // 确保根元素存在
+    if (!root) return; // Bail out if the root element doesn't exist
 
-    // 清除之前的内容
+    // Clear previous content
     root.innerHTML = '';
 
     const randomArticleContainer = document.createElement('div');
@@ -20,7 +20,7 @@ function initialize_fc_lite() {
     randomArticleContainer.innerHTML = `
         <div class="loading-placeholder">
             <div class="loading-spinner"></div>
-            <div class="loading-text">加载中...</div>
+            <div class="loading-text">Loading...</div>
         </div>
     `;
     root.appendChild(randomArticleContainer);
@@ -32,15 +32,15 @@ function initialize_fc_lite() {
     
     const loadMoreBtn = document.createElement('button');
     loadMoreBtn.id = 'load-more-btn';
-    loadMoreBtn.innerText = '再来亿点';
+    loadMoreBtn.innerText = 'More';
     root.appendChild(loadMoreBtn);
 
     const statsContainer = document.createElement('div');
     statsContainer.id = 'stats-container';
     root.appendChild(statsContainer);
 
-    let start = 0; // 记录加载起始位置
-    let allArticles = []; // 存储所有文章
+    let start = 0; // Current pagination offset
+    let allArticles = []; // All loaded articles
 
     function loadMoreArticles() {
         const cacheKey = 'friend-circle-lite-cache';
@@ -48,7 +48,7 @@ function initialize_fc_lite() {
         const cacheTime = localStorage.getItem(cacheTimeKey);
         const now = new Date().getTime();
 
-        if (cacheTime && (now - cacheTime < 10 * 60 * 1000)) { // 缓存时间小于10分钟
+        if (cacheTime && (now - cacheTime < 10 * 60 * 1000)) { // Cache is under 10 minutes old
             const cachedData = JSON.parse(localStorage.getItem(cacheKey));
             if (cachedData) {
                 processArticles(cachedData);
@@ -56,16 +56,16 @@ function initialize_fc_lite() {
             }
         }
 
-        // 设置10秒超时
+        // 10 second timeout
         const timeoutId = setTimeout(() => {
-            showError('加载超时，请刷新页面重试');
+            showError('Loading timed out, please refresh the page');
         }, 10000);
 
         fetch(`${UserConfig.private_api_url}all.json`)
             .then(response => {
                 clearTimeout(timeoutId);
                 if (!response.ok) {
-                    throw new Error('网络响应错误');
+                    throw new Error('Network response error');
                 }
                 return response.json();
             })
@@ -76,11 +76,11 @@ function initialize_fc_lite() {
             })
             .catch(error => {
                 clearTimeout(timeoutId);
-                console.error('加载失败:', error);
-                showError('加载失败，请检查网络连接');
+                console.error('Load failed:', error);
+                showError('Failed to load, please check your network connection');
             })
             .finally(() => {
-                loadMoreBtn.innerText = '再来亿点'; // 恢复按钮文本
+                loadMoreBtn.innerText = 'More'; // Restore button text
             });
     }
 
@@ -89,7 +89,7 @@ function initialize_fc_lite() {
             <div class="error-placeholder">
                 <div class="error-icon">⚠️</div>
                 <div class="error-text">${message}</div>
-                <button class="retry-button" onclick="location.reload()">重新加载</button>
+                <button class="retry-button" onclick="location.reload()">Reload</button>
             </div>
         `;
     }
@@ -97,16 +97,16 @@ function initialize_fc_lite() {
     function processArticles(data) {
         allArticles = data.article_data || [];
 
-        // 处理统计数据
+        // Process the aggregated stats
         const stats = data.statistical_data;
         
         statsContainer.innerHTML = `
+            <div>${stats.total_links} links with ${stats.active_links} active | ${stats.total_articles} articles in total</div>
+            <div>Updated at:${stats.last_updated_time}</div>
             <div>Powered by: <a href="https://github.com/willow-god/Friend-Circle-Lite" target="_blank">FriendCircleLite</a><br></div>
-            <div>Designed By: <a href="https://www.liushen.fun/" target="_blank">LiuShen</a><br></div>
-            <div>更新时间:${stats.last_updated_time}</div>
         `;
 
-        displayRandomArticle(stats); // 显示随机友链卡片，传入统计数据
+        displayRandomArticle(stats); // Show a random friend-link card, passing the stats along
 
         const articles = allArticles.slice(start, start + UserConfig.page_turning_number);
 
@@ -118,7 +118,7 @@ function initialize_fc_lite() {
             const title = document.createElement('div');
             title.className = 'card-title';
             title.innerText = article.title;
-            title.title = article.title; // 添加完整标题的提示
+            title.title = article.title; // Show the full title on hover
             card.appendChild(title);
             title.onclick = () => window.open(article.link, '_blank');
 
@@ -153,45 +153,25 @@ function initialize_fc_lite() {
         start += UserConfig.page_turning_number;
 
         if (start >= allArticles.length) {
-            loadMoreBtn.style.display = 'none'; // 隐藏按钮
+            loadMoreBtn.style.display = 'none'; // Hide the button
         }
     }
 
-    // 显示随机文章的逻辑
+    // Show a random article
     function displayRandomArticle(stats) {
         const randomArticle = allArticles[Math.floor(Math.random() * allArticles.length)];
         if (!randomArticle) {
             randomArticleContainer.innerHTML = `
                 <div class="error-placeholder">
-                    <div class="error-text">暂无可展示文章</div>
+                    <div class="error-text">No articles to show yet</div>
                 </div>
             `;
             return;
         }
         randomArticleContainer.innerHTML = `
-            <div class="random-top">
-                <div class="random-stats">
-                    <div class="stat-item">
-                        <div class="stat-num">${stats.friends_num}</div>
-                        <div class="stat-text">订阅</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-num">${stats.active_num}</div>
-                        <div class="stat-text">活跃</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-num">${stats.article_num}</div>
-                        <div class="stat-text">文章</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-num">${stats.error_num}</div>
-                        <div class="stat-text">失败</div>
-                    </div>
-                </div>
-            </div>
             <div class="random-content">
                 <div class="random-container">
-                    <div class="random-container-title">🎲 随便转转</div>
+                    <div class="random-container-title">🎲 Random Pick</div>
                     <div class="random-title" title="${randomArticle.title}">${randomArticle.title}</div>
                     <div class="random-meta">
                         <span class="random-author">✍️ ${randomArticle.author}</span>
@@ -199,13 +179,13 @@ function initialize_fc_lite() {
                     </div>
                 </div>
                 <div class="random-button-container">
-                    <a href="#" id="refresh-random-article">🔄 换一篇</a>
-                    <button class="random-link-button" onclick="window.open('${randomArticle.link}', '_blank')">阅读文章</button>
+                    <a href="#" id="refresh-random-article">🔄 Shuffle</a>
+                    <button class="random-link-button" onclick="window.open('${randomArticle.link}', '_blank')">Read </button>
                 </div>
             </div>
         `;
 
-        // 为刷新按钮添加事件监听器
+        // Wire up the refresh button
         const refreshBtn = document.getElementById('refresh-random-article');
         refreshBtn.addEventListener('click', function (event) {
             event.preventDefault();
@@ -218,7 +198,7 @@ function initialize_fc_lite() {
     }
 
     function showAuthorArticles(author, avatar, link) {
-        // 如果不存在，则创建模态框结构
+        // Build the modal markup if it doesn't exist yet
         if (!document.getElementById('fclite-modal')) {
             const modal = document.createElement('div');
             modal.id = 'modal';
@@ -240,16 +220,16 @@ function initialize_fc_lite() {
         const modalAuthorNameLink = document.getElementById('modal-author-name-link');
         const modalBg = document.getElementById('modal-bg');
 
-        modalArticlesContainer.innerHTML = ''; // 清空之前的内容
-        modalAuthorAvatar.src = avatar  || UserConfig.error_img; // 使用默认头像
-        modalAuthorAvatar.onerror = () => modalAuthorAvatar.src = UserConfig.error_img; // 头像加载失败时使用默认头像
-        modalBg.src = avatar || UserConfig.error_img; // 使用默认头像
-        modalBg.onerror = () => modalBg.src = UserConfig.error_img; // 头像加载失败时使用默认头像
+        modalArticlesContainer.innerHTML = ''; // Clear previous content
+        modalAuthorAvatar.src = avatar  || UserConfig.error_img; // Fall back to the default avatar
+        modalAuthorAvatar.onerror = () => modalAuthorAvatar.src = UserConfig.error_img; // Fall back to the default avatar if it fails to load
+        modalBg.src = avatar || UserConfig.error_img; // Fall back to the default avatar
+        modalBg.onerror = () => modalBg.src = UserConfig.error_img; // Fall back to the default avatar if it fails to load
         modalAuthorNameLink.innerText = author;
         modalAuthorNameLink.href = new URL(link).origin;
 
         const authorArticles = allArticles.filter(article => article.author === author);
-        // 仅仅取前五个，防止文章过多导致模态框过长，如果不够五个则全部取出
+        // Cap at 5 articles so the modal doesn't grow too tall; show all if there are fewer
         authorArticles.slice(0, 4).forEach(article => {
             const articleDiv = document.createElement('div');
             articleDiv.className = 'modal-article';
@@ -269,14 +249,14 @@ function initialize_fc_lite() {
             modalArticlesContainer.appendChild(articleDiv);
         });
 
-        // 设置类名以触发显示动画
+        // Add the class to trigger the show animation
         modal.style.display = 'block';
         setTimeout(() => {
             modal.classList.add('modal-open');
-        }, 10); // 确保显示动画触发
+        }, 10); // Ensure the show animation actually fires
     }
 
-    // 隐藏模态框的函数
+    // Hide the modal
     function hideModal() {
         const modal = document.getElementById('modal');
         modal.classList.remove('modal-open');
@@ -286,13 +266,13 @@ function initialize_fc_lite() {
         }, { once: true });
     }
 
-    // 初始加载
+    // Initial load
     loadMoreArticles();
 
-    // 加载更多按钮点击事件
+    // Load-more button click handler
     loadMoreBtn.addEventListener('click', loadMoreArticles);
 
-    // 点击遮罩层关闭模态框
+    // Close the modal when clicking the overlay
     window.onclick = function(event) {
         const modal = document.getElementById('modal');
         if (event.target === modal) {

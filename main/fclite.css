@@ -61,44 +61,6 @@
     box-sizing: border-box;
 }
 
-.random-top {
-    width: 100%;
-}
-
-.random-stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-}
-
-.stat-item {
-    text-align: center;
-    padding: 12px;
-    background-color: var(--background-color);
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-    transition: all 0.3s ease;
-}
-
-.stat-item:hover {
-    border-color: var(--hover-color);
-}
-
-.stat-num {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--hover-color);
-    line-height: 1;
-    margin-bottom: 4px;
-}
-
-.stat-text {
-    font-size: 11px;
-    color: var(--author-color);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
 .random-content {
     display: flex;
     align-items: flex-end;
