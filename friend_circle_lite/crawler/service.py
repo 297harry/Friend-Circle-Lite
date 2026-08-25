@@ -96,6 +96,7 @@ class SingleSiteCrawler:
         for article in articles:
             article.author = website.name
             article.avatar = website.avatar
+            article.lang = website.lang
             logging.info(f"[RSS 抓取] {website.name} 发布了新文章：{article.title}，时间：{article.published}，链接：{article.link}")
         return articles
 

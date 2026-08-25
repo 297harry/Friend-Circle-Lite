@@ -78,6 +78,7 @@ class Website:
                 url=normalize_homepage_url(raw_friend.get("link") or raw_friend.get("url") or ""),
                 avatar=str(raw_friend.get("avatar", "")).strip(),
                 linkpage=str(raw_friend.get("linkpage", "")).strip(),
+                lang=str(raw_friend.get("lang", "")).strip()
             )
 
         name = raw_friend[0]
@@ -85,10 +86,11 @@ class Website:
         if len(raw_friend) > 3:
             linkpage = raw_friend[2]
             avatar = raw_friend[3]
+            lang = raw_friend[5]
         else:
             linkpage = ""
             avatar = raw_friend[2] if len(raw_friend) > 2 else ""
-        return cls(name=str(name).strip(), url=normalize_homepage_url(url), avatar=str(avatar or "").strip(), linkpage=str(linkpage or "").strip())
+        return cls(name=str(name).strip(), url=normalize_homepage_url(url), avatar=str(avatar or "").strip(), linkpage=str(linkpage or "").strip(), lang=str(lang or "").strip())
 
     def to_error_payload(self) -> list[str]:
         """Return the legacy structure used by `errors.json`."""

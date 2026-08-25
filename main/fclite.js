@@ -5,7 +5,8 @@ function initialize_fc_lite() {
     UserConfig = {
         private_api_url: UserConfig?.private_api_url || "", 
         page_turning_number: UserConfig?.page_turning_number || 24, // 24 articles per page by default
-        error_img: UserConfig?.error_img || "https://fastly.jsdelivr.net/gh/willow-god/Friend-Circle-Lite/static/favicon.ico" // default avatar
+        error_img: UserConfig?.error_img || "https://fastly.jsdelivr.net/gh/willow-god/Friend-Circle-Lite/static/favicon.ico", // default avatar
+        lang: UserConfig?.lang || 'en' // article language filter
     };
 
     const root = document.getElementById('friend-circle-lite-root');
@@ -95,7 +96,8 @@ function initialize_fc_lite() {
     }
 
     function processArticles(data) {
-        allArticles = data.article_data || [];
+        // Missing lang is treated as 'en' for backward compatibility.
+        allArticles = (data.article_data || []).filter(article => (article.lang || 'en') === UserConfig.lang);
 
         // Process the aggregated stats
         const stats = data.statistical_data;
