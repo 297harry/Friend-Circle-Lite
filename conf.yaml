@@ -10,7 +10,7 @@ debug: false
 #   article_count: 每个站点最多抓取的文章数量
 spider_settings:
   enable: true
-  json_url: "https://friends-link--data-bee.netlify.app/friend.json"
+  json_url: "https://friend-grid--data-bee.netlify.app/friend.json"
   article_count: 5
 
 # 代理配置
