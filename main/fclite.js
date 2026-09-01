@@ -88,7 +88,6 @@ function initialize_fc_lite() {
     function showError(message) {
         randomArticleContainer.innerHTML = `
             <div class="error-placeholder">
-                <div class="error-icon">⚠️</div>
                 <div class="error-text">${message}</div>
                 <button class="retry-button" onclick="location.reload()">Reload</button>
             </div>
@@ -103,8 +102,9 @@ function initialize_fc_lite() {
         const stats = data.statistical_data;
         
         statsContainer.innerHTML = `
-            <div>${stats.total_links} links with ${stats.active_links} active | ${stats.total_articles} articles in total</div>
+            <div>${stats.friends_num} friends with ${stats.active_num} active | ${stats.article_num} articles in total</div>
             <div>Updated at:${stats.last_updated_time}</div>
+            <br>
             <div>Powered by: <a href="https://github.com/willow-god/Friend-Circle-Lite" target="_blank">FriendCircleLite</a><br></div>
         `;
 
@@ -124,6 +124,9 @@ function initialize_fc_lite() {
             card.appendChild(title);
             title.onclick = () => window.open(article.link, '_blank');
 
+            const metadata = document.createElement('div');
+            metadata.className = 'card-meta';
+
             const author = document.createElement('div');
             author.className = 'card-author';
             const authorImg = document.createElement('img');
@@ -132,7 +135,7 @@ function initialize_fc_lite() {
             authorImg.onerror = () => authorImg.src = UserConfig.error_img;
             author.appendChild(authorImg);
             author.appendChild(document.createTextNode(article.author));
-            card.appendChild(author);
+            metadata.appendChild(author);
 
             author.onclick = () => {
                 showAuthorArticles(article.author, article.avatar, article.link);
@@ -140,8 +143,9 @@ function initialize_fc_lite() {
 
             const date = document.createElement('div');
             date.className = 'card-date';
-            date.innerText = "🗓️" + article.created.substring(0, 10);
-            card.appendChild(date);
+            date.innerText = article.created.substring(0, 10);
+            metadata.appendChild(date);
+            card.appendChild(metadata);
 
             const bgImg = document.createElement('img');
             bgImg.className = 'card-bg no-lightbox';
@@ -176,8 +180,8 @@ function initialize_fc_lite() {
                     <div class="random-container-title">🎲 Random Pick</div>
                     <div class="random-title" title="${randomArticle.title}">${randomArticle.title}</div>
                     <div class="random-meta">
-                        <span class="random-author">✍️ ${randomArticle.author}</span>
-                        <span class="random-date">📅 ${randomArticle.created.substring(0, 10)}</span>
+                        <span class="random-author">${randomArticle.author}</span>
+                        <span class="random-date">${randomArticle.created.substring(0, 10)}</span>
                     </div>
                 </div>
                 <div class="random-button-container">
@@ -289,3 +293,10 @@ function whenDOMReady() {
 
 whenDOMReady();
 document.addEventListener("pjax:complete", initialize_fc_lite);
+document.addEventListener('friend-language-change', (event) => {
+    UserConfig = {
+        ...UserConfig,
+        lang: event.detail.lang,
+    };
+    initialize_fc_lite();
+});
